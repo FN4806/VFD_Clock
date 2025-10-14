@@ -3,11 +3,13 @@
 #include <Temperature_LM75_Derived.h>
 
 #include "config/config.h"
+#include "modules/display.h"
 
 RTC_DS1307 rtc;
 Generic_LM75 tempSensor;
 
 using namespace config;
+using namespace display;
 
 // min, circle, time, centre dash, right dash
 int segs1 = 0b10000;
@@ -42,58 +44,25 @@ bool settingStatus = false;
 int daySegs1[7] = {0b00011, 0b00001, 0b00010, 0b00011, 0b00000, 0b00001, 0b00010};
 int daySegs2[7] = {0b0001, 0b0000, 0b0000, 0b0000, 0b0001, 0b0001, 0b0001};
 
-void sendData(int data1, int data2) {
-  digitalWrite(pins.kDisplayChipEnable, LOW);
-  digitalWrite(pins.kSerialClock, LOW);
-  shiftOut(pins.kSerialData, pins.kSerialData, LSBFIRST, data2);
-  shiftOut(pins.kSerialData, pins.kSerialData, LSBFIRST, data1);
-
-  digitalWrite(pins.kSerialClock, LOW);
-  digitalWrite(pins.kDisplayChipEnable, HIGH);
-}
-
-void displayDigit(int digit, int segment, int Extras1, int Extras2) {
-  //Serial.print("Displaying Digit: ");
-  //Serial.println(digit);
-
-  int output1 = 0;
-  int output2 = 0;
-  if (segment >= 1) { 
-    output1 = ((segment - 1) << 6) | 0b00100000 | Extras1;
-    output2 = (Extras2 << 4) | digit;
-    // Serial.print(output1);
-    // Serial.println(output2);
-  }
-  else {
-    output1 = 0b00000000 | Extras1;
-    output2 = 0b00000000 | (Extras2 << 4);
-    // Serial.print(output1);
-    // Serial.println(output2);
-  }
-
-  sendData(output1, output2);
-
-}
-
 void displayDDMM() {
-  displayDigit(d1, 1, segs1, segs2);
+  SetDigit(d1, 1, segs1, segs2);
   delay(2);
-  displayDigit(d2, 2, segs1, segs2);
+  SetDigit(d2, 2, segs1, segs2);
   delay(2);
-  displayDigit(m1, 3, segs1, segs2);
+  SetDigit(m1, 3, segs1, segs2);
   delay(2);
-  displayDigit(m2, 4, segs1, segs2);
+  SetDigit(m2, 4, segs1, segs2);
   delay(2); 
 }
 
 void displayYYYY() {
-  displayDigit(y1, 1, segs1, segs2);
+  SetDigit(y1, 1, segs1, segs2);
   delay(2);
-  displayDigit(y2, 2, segs1, segs2);
+  SetDigit(y2, 2, segs1, segs2);
   delay(2);
-  displayDigit(y3, 3, segs1, segs2);
+  SetDigit(y3, 3, segs1, segs2);
   delay(2);
-  displayDigit(y4, 4, segs1, segs2);
+  SetDigit(y4, 4, segs1, segs2);
   delay(2);   
 }
 
@@ -166,7 +135,7 @@ void Clock() {
   segs2 = segs2 & 0b0101;
   
   DateTime now = rtc.now();
-
+  
   h1 = now.hour() / 10;
   h2 = now.hour() - (h1*10);
 
@@ -175,19 +144,19 @@ void Clock() {
 
   //Serial.print("Attempting to display digit: ");
   //Serial.println(h1);
-  displayDigit(h1, 1, segs1, segs2);
+  SetDigit(h1, 1, segs1, segs2);
   delay(2);
   //Serial.print("Attempting to display digit: ");
   //Serial.println(h2);
-  displayDigit(h2, 2, segs1, segs2);
+  SetDigit(h2, 2, segs1, segs2);
   delay(2);
   //Serial.print("Attempting to display digit: ");
   //Serial.println(m1);
-  displayDigit(m1, 3, segs1, segs2);
+  SetDigit(m1, 3, segs1, segs2);
   delay(2);
   //Serial.print("Attempting to display digit: ");
   //Serial.println(m2);
-  displayDigit(m2, 4, segs1, segs2);
+  SetDigit(m2, 4, segs1, segs2);
   delay(2); 
 }
 
@@ -226,9 +195,9 @@ void temp() {
   //Serial.print(tempC);
   //Serial.println("C");
 
-  displayDigit(t1, 2, segs1, segs2);
+  SetDigit(t1, 2, segs1, segs2);
   delay(2);
-  displayDigit(t2, 3, segs1, segs2);
+  SetDigit(t2, 3, segs1, segs2);
   delay(2);
 }
 
@@ -239,16 +208,16 @@ void setup() {
     Serial.println("Couldn't find RTC");
     
     segs1 = segs1 | 0b01000;
-    displayDigit(8, 1, segs1, segs2);
+    SetDigit(8, 1, segs1, segs2);
     while (true) {
       Serial.println("Setting Display");
-      displayDigit(13, 1, segs1, segs2);
+      SetDigit(13, 1, segs1, segs2);
       delay(2);
-      displayDigit(14, 2, segs1, segs2);
+      SetDigit(14, 2, segs1, segs2);
       delay(2);
-      displayDigit(10, 3, segs1, segs2);
+      SetDigit(10, 3, segs1, segs2);
       delay(2);
-      displayDigit(13, 4, segs1, segs2);
+      SetDigit(13, 4, segs1, segs2);
       delay(2);
     }
   } 
@@ -338,19 +307,19 @@ void timeSet() {
     if (setMode = 0) {
       // flash hours
       if ((millis() - flashTimer) < 500) {
-        displayDigit(h1, 1, segs1, segs2);
+        SetDigit(h1, 1, segs1, segs2);
         delay(2);
-        displayDigit(h2, 2, segs1, segs2);
+        SetDigit(h2, 2, segs1, segs2);
         delay(2);
-        displayDigit(m1, 3, segs1, segs2);
+        SetDigit(m1, 3, segs1, segs2);
         delay(2);
-        displayDigit(m2, 4, segs1, segs2);
+        SetDigit(m2, 4, segs1, segs2);
         delay(2); 
       }
       else if ((millis() - flashTimer) < 1000) {
-        displayDigit(m1, 3, segs1, segs2);
+        SetDigit(m1, 3, segs1, segs2);
         delay(2);
-        displayDigit(m2, 4, segs1, segs2);
+        SetDigit(m2, 4, segs1, segs2);
         delay(2); 
       }
       else {
@@ -360,19 +329,19 @@ void timeSet() {
     else {
       // flash minutes 
       if ((millis() - flashTimer) < 500) {
-        displayDigit(h1, 1, segs1, segs2);
+        SetDigit(h1, 1, segs1, segs2);
         delay(2);
-        displayDigit(h2, 2, segs1, segs2);
+        SetDigit(h2, 2, segs1, segs2);
         delay(2);
-        displayDigit(m1, 3, segs1, segs2);
+        SetDigit(m1, 3, segs1, segs2);
         delay(2);
-        displayDigit(m2, 4, segs1, segs2);
+        SetDigit(m2, 4, segs1, segs2);
         delay(2); 
       }
       else if ((millis() - flashTimer) < 1000) {
-        displayDigit(h1, 1, segs1, segs2);
+        SetDigit(h1, 1, segs1, segs2);
         delay(2);
-        displayDigit(h2, 2, segs1, segs2);
+        SetDigit(h2, 2, segs1, segs2);
         delay(2); 
       }
       else {flashTimer = millis();}
