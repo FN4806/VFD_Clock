@@ -1,16 +1,13 @@
 #include <Arduino.h>
 #include <RTClib.h>
 #include <Temperature_LM75_Derived.h>
+
+#include "config/config.h"
+
 RTC_DS1307 rtc;
 Generic_LM75 tempSensor;
 
-#define SERIAL_DATA 11
-#define CHIP_ENABLE 10
-#define SER_CLK 13
-#define MODE_BTN 2
-#define SET_BTN 3
-#define UP_BTN 4
-#define DOWN_BTN 5
+using namespace config;
 
 // min, circle, time, centre dash, right dash
 int segs1 = 0b10000;
@@ -46,13 +43,13 @@ int daySegs1[7] = {0b00011, 0b00001, 0b00010, 0b00011, 0b00000, 0b00001, 0b00010
 int daySegs2[7] = {0b0001, 0b0000, 0b0000, 0b0000, 0b0001, 0b0001, 0b0001};
 
 void sendData(int data1, int data2) {
-  digitalWrite(CHIP_ENABLE, LOW);
-  digitalWrite(SER_CLK, LOW);
-  shiftOut(SERIAL_DATA, SER_CLK, LSBFIRST, data2);
-  shiftOut(SERIAL_DATA, SER_CLK, LSBFIRST, data1);
+  digitalWrite(pins.kDisplayChipEnable, LOW);
+  digitalWrite(pins.kSerialClock, LOW);
+  shiftOut(pins.kSerialData, pins.kSerialData, LSBFIRST, data2);
+  shiftOut(pins.kSerialData, pins.kSerialData, LSBFIRST, data1);
 
-  digitalWrite(SER_CLK, LOW);
-  digitalWrite(CHIP_ENABLE, HIGH);
+  digitalWrite(pins.kSerialClock, LOW);
+  digitalWrite(pins.kDisplayChipEnable, HIGH);
 }
 
 void displayDigit(int digit, int segment, int Extras1, int Extras2) {
@@ -103,11 +100,11 @@ void displayYYYY() {
 bool checkButtons() {
   bool pressedState = false;
   
-  if (digitalRead(MODE_BTN) != 1) {
+  if (digitalRead(pins.kModeButton) != 1) {
     pressedState = true;
   }
   
-  if (digitalRead(SET_BTN) != 1) {
+  if (digitalRead(pins.kSetButton) != 1) {
     pressedState = true;
   }
   
@@ -133,7 +130,7 @@ void Date() {
   d1 = now.day() / 10;
   d2 = now.day() - (d1*10);
 
-  if (digitalRead(MODE_BTN) != 1) {
+  if (digitalRead(pins.kModeButton) != 1) {
     goto QuickExit;
   }
 
@@ -260,21 +257,16 @@ void setup() {
     //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 
-  // put your setup code here, to run once:
-  pinMode(SERIAL_DATA, OUTPUT);
-  digitalWrite(CHIP_ENABLE, LOW);
-  pinMode(CHIP_ENABLE, OUTPUT);
-  pinMode(SER_CLK, OUTPUT);
-  pinMode(MODE_BTN, INPUT_PULLUP);
+  initialisePins();
 }
 
 void timeSet() {
-  while (digitalRead(MODE_BTN) != 1) {
+  while (digitalRead(pins.kModeButton) != 1) {
 
     int setMode = 0; // 0 = hours, 1 = minutes
 
     // Change the set mode when the set button is pressed
-    if ((digitalRead(SET_BTN) != 1) & ((millis() - waitLoop) > 500)) {
+    if ((digitalRead(pins.kSetButton) != 1) & ((millis() - waitLoop) > 500)) {
       if (setMode = 0) {
         setMode = 1;
       }
@@ -291,7 +283,7 @@ void timeSet() {
 
     // Handle Additions and Subtractions to Minutes or Seconds 
     
-    if ((digitalRead(UP_BTN) != 1) & ((millis() - waitLoop) > 500)) {
+    if ((digitalRead(pins.kUpButton) != 1) & ((millis() - waitLoop) > 500)) {
       if (setMode = 0) {
         if (setMins < 59) {
           setMins++;
@@ -311,7 +303,7 @@ void timeSet() {
       waitLoop = millis();
     }
 
-    if ((digitalRead(DOWN_BTN) != 1) & ((millis() - waitLoop) > 500)) {
+    if ((digitalRead(pins.kDownButton) != 1) & ((millis() - waitLoop) > 500)) {
       if (setMode = 0) {
         if (setMins > 0) {
           setMins--;
@@ -421,8 +413,8 @@ void loop() {
   //Serial.println(" --- Loop Tick --- ");
   Serial.println("Main Loop Begining:");
   Serial.print("Button State = ");
-  Serial.println(digitalRead(MODE_BTN));
-  if (digitalRead(MODE_BTN) != 1) {
+  Serial.println(digitalRead(pins.kModeButton));
+  if (digitalRead(pins.kModeButton) != 1) {
     Serial.println("Button Pressed");
     if (mode < 2) {
       mode++;
@@ -438,7 +430,7 @@ void loop() {
     }
   }
 
-  if (digitalRead(SET_BTN) != 1) {
+  if (digitalRead(pins.kSetButton) != 1) {
     Serial.println("Set Button Pressed");
     mode = 3;
     while (millis() - waitLoop < 500) {
