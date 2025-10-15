@@ -12,8 +12,13 @@ namespace config {
         const int kDownButton = 5;
     };
 
-    void initialisePins();
+    struct GlobalFlags {
+        volatile int mode_changed = 0;
+    };
 
+    void InitialisePins();
+
+    extern GlobalFlags global_flags;
     extern Pins pins;
 }
 

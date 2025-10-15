@@ -2,21 +2,20 @@
 #include "modules/display.h"
 #include "config/config.h"
 
-using namespace config;
 
 namespace display
 {
-  void display::OutputData(int data1, int data2) {
-    digitalWrite(pins.kDisplayChipEnable, LOW);
-    digitalWrite(pins.kSerialClock, LOW);
-    shiftOut(pins.kSerialData, pins.kSerialData, LSBFIRST, data2);
-    shiftOut(pins.kSerialData, pins.kSerialData, LSBFIRST, data1);
+  void OutputData(int data1, int data2) {
+    digitalWrite(config::pins.kDisplayChipEnable, LOW);
+    digitalWrite(config::pins.kSerialClock, LOW);
+    shiftOut(config::pins.kSerialData, config::pins.kSerialData, LSBFIRST, data2);
+    shiftOut(config::pins.kSerialData, config::pins.kSerialData, LSBFIRST, data1);
 
-    digitalWrite(pins.kSerialClock, LOW);
-    digitalWrite(pins.kDisplayChipEnable, HIGH);
+    digitalWrite(config::pins.kSerialClock, LOW);
+    digitalWrite(config::pins.kDisplayChipEnable, HIGH);
   }  
 
-  void display::SetDigit(int digit, int segment, int extras_1, int extras_2) {
+  void SetDigit(int digit, int segment, int extras_1, int extras_2) {
     int output1 = 0;
     int output2 = 0;
     if (segment >= 1) { 
