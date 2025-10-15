@@ -16,7 +16,7 @@ void ModeButtonInterrupt() {
   if (config::global_flags.mode_changed == 0) {
     config::global_flags.mode_changed = 1;
 
-    if (Mode <= (MaxMode - 1)) {
+    if (Mode < (MaxMode - 1)) {
       Mode++;
     } else {
       Mode = 0;
@@ -25,6 +25,7 @@ void ModeButtonInterrupt() {
 }
 
 void setup() {
+  Serial.begin(9600);
   if (!InitialiseClock()) {
     Mode = 10;
   }
@@ -56,6 +57,7 @@ void setDisplay() {
 }
 
 void loop() {
+  Serial.println("Loop");
   config::global_flags.mode_changed = 0;
   setDisplay();
 }

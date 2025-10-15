@@ -33,6 +33,7 @@ bool clock::InitialiseClock() {
 }
 
 void clock::SetTime() {
+    Serial.println("ClockTime function");
     segs_1 = segs_1 | 0b10100;
     segs_2 = segs_2 | 0b0100;
     segs_2 = segs_2 & 0b0101;

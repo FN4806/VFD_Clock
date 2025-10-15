@@ -9,7 +9,8 @@ namespace config {
         pinMode(pins.kSerialData, OUTPUT);
         digitalWrite(pins.kDisplayChipEnable, LOW);
         pinMode(pins.kDisplayChipEnable, OUTPUT);
-        pinMode(pins.kDisplayChipEnable, OUTPUT);
+        digitalWrite(pins.kDisplayChipEnable, HIGH);
+        pinMode(pins.kSerialClock, OUTPUT);
 
         pinMode(pins.kModeButton, INPUT_PULLUP);
         pinMode(pins.kSetButton, INPUT_PULLUP);

@@ -6,6 +6,7 @@
 namespace display
 {
   void OutputData(int data1, int data2) {
+    Serial.println("Outputting Data");
     digitalWrite(config::pins.kDisplayChipEnable, LOW);
     digitalWrite(config::pins.kSerialClock, LOW);
     shiftOut(config::pins.kSerialData, config::pins.kSerialData, LSBFIRST, data2);
@@ -16,6 +17,7 @@ namespace display
   }  
 
   void SetDigit(int digit, int segment, int extras_1, int extras_2) {
+    Serial.println("Setting Digit");
     int output1 = 0;
     int output2 = 0;
     if (segment >= 1) { 
