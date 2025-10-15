@@ -6,18 +6,17 @@
 namespace display
 {
   void OutputData(int data1, int data2) {
-    Serial.println("Outputting Data");
     digitalWrite(config::pins.kDisplayChipEnable, LOW);
     digitalWrite(config::pins.kSerialClock, LOW);
-    shiftOut(config::pins.kSerialData, config::pins.kSerialData, LSBFIRST, data2);
-    shiftOut(config::pins.kSerialData, config::pins.kSerialData, LSBFIRST, data1);
+
+    shiftOut(config::pins.kSerialData, config::pins.kSerialClock, LSBFIRST, data2);
+    shiftOut(config::pins.kSerialData, config::pins.kSerialClock, LSBFIRST, data1);
 
     digitalWrite(config::pins.kSerialClock, LOW);
     digitalWrite(config::pins.kDisplayChipEnable, HIGH);
   }  
 
   void SetDigit(int digit, int segment, int extras_1, int extras_2) {
-    Serial.println("Setting Digit");
     int output1 = 0;
     int output2 = 0;
     if (segment >= 1) { 

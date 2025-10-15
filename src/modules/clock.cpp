@@ -12,8 +12,6 @@ Generic_LM75 tempSensor;
 
 using namespace clock;
 
-config::GlobalFlags global_flags{};
-
 // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday 
 int day_segs_1[7] = {0b00011, 0b00001, 0b00010, 0b00011, 0b00000, 0b00001, 0b00010};
 int day_segs_2[7] = {0b0001, 0b0000, 0b0000, 0b0000, 0b0001, 0b0001, 0b0001};
@@ -33,14 +31,22 @@ bool clock::InitialiseClock() {
 }
 
 void clock::SetTime() {
-    Serial.println("ClockTime function");
     segs_1 = segs_1 | 0b10100;
     segs_2 = segs_2 | 0b0100;
     segs_2 = segs_2 & 0b0101;
 
+    if (config::global_flags.rtc_error == 1) {
+        DisplayError();
+        return;
+    }
+
     DateTime now = rtc.now();
     DateTimeHandler dateTimeHandler;
     dateTimeHandler.GetDigits(now);
+
+    Serial.print(now.hour());
+    Serial.print(":");
+    Serial.println(now.minute());
 
     SetDayOfWeek(now.dayOfTheWeek());
 
@@ -59,6 +65,11 @@ void clock::SetDate() {
     segs_2 = segs_2 & 0b0011;
     segs_2 = segs_2 | 0b0010;
 
+    if (config::global_flags.rtc_error == 1) {
+        DisplayError();
+        return;
+    }
+
     DateTime now = rtc.now();
     DateTimeHandler dateTimeHandler;
     dateTimeHandler.GetDigits(now);
@@ -67,7 +78,9 @@ void clock::SetDate() {
 
     // Delay that also checks the sate of the global interrupt mode flag, ensuring that if the mode is changed, the MCU doesnt get stuck in a delay and cause lag for the user
     unsigned long start_time = millis();
-    while ((millis() - start_time < 10000) and (global_flags.mode_changed != 1)) {
+    while (millis() - start_time < 10000) {
+        if (config::global_flags.mode_changed == 1) break;
+
         display::SetDigit(dateTimeHandler.day_1, 1, segs_1, segs_2);
         delay(2);
         display::SetDigit(dateTimeHandler.day_2, 2, segs_1, segs_2);
@@ -79,7 +92,9 @@ void clock::SetDate() {
     }
 
     start_time = millis();
-    while ((millis() - start_time < 10000) and (global_flags.mode_changed != 1)) {
+    while (millis() - start_time < 10000) {
+        if (config::global_flags.mode_changed == 1) break;
+
         display::SetDigit(dateTimeHandler.year_1, 1, segs_1, segs_2);
         delay(2);
         display::SetDigit(dateTimeHandler.year_2, 2, segs_1, segs_2);

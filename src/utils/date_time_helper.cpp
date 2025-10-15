@@ -7,8 +7,8 @@ void DateTimeHandler::GetDigits(const DateTime& date) {
     minute_1 = floor(date.minute() / 10);
     minute_2 = date.minute() % 10;
 
-    hour_1 = floor(date.minute() / 10);
-    hour_2 = date.minute() % 10;
+    hour_1 = floor(date.hour() / 10);
+    hour_2 = date.hour() % 10;
 
     day_1 = floor(date.day() / 10);
     day_2 = date.day() % 10;

@@ -13,10 +13,15 @@ int Mode = 0; // 0 = time, 1 = date, 2 = temp, 3 = time setup mode, 10 = Critial
 int MaxMode = 2; 
 
 void ModeButtonInterrupt() {
-  if (config::global_flags.mode_changed == 0) {
+  static bool first_press = true;
+  static unsigned long last_pressed = millis();
+
+  if ((config::global_flags.mode_changed == 0) and (first_press or (millis() - last_pressed >= 200))) {
+    first_press = false;
+    last_pressed = millis();
     config::global_flags.mode_changed = 1;
 
-    if (Mode < (MaxMode - 1)) {
+    if (Mode < MaxMode) {
       Mode++;
     } else {
       Mode = 0;
@@ -25,9 +30,8 @@ void ModeButtonInterrupt() {
 }
 
 void setup() {
-  Serial.begin(9600);
   if (!InitialiseClock()) {
-    Mode = 10;
+    config::global_flags.rtc_error = 1;
   }
 
   attachInterrupt(digitalPinToInterrupt(config::pins.kModeButton), ModeButtonInterrupt, FALLING);
@@ -35,29 +39,28 @@ void setup() {
 }
 
 void setDisplay() {
-  if (Mode == 0) {
-    Serial.println("Clock Mode");
+  switch (Mode) 
+  {
+  case 0:
     SetTime();
-  }
+    break;
 
-  if (Mode == 1) {
-    Serial.println("Date Mode");
+  case 1:
     SetDate();
-  }
+    break;
 
-  if (Mode == 2) {
-    Serial.println("Temp Mode");
+  case 2:
     SetTemp();
-  }
+    break;
 
-  if (Mode == 10) {
-    Serial.println("Critial Error!");
+  case 10:
     DisplayError();
+    break;
   }
 }
 
 void loop() {
-  Serial.println("Loop");
-  config::global_flags.mode_changed = 0;
+  if (config::global_flags.mode_changed == 1) config::global_flags.mode_changed = 0; 
+  
   setDisplay();
 }

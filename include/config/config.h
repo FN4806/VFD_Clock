@@ -14,6 +14,7 @@ namespace config {
 
     struct GlobalFlags {
         volatile int mode_changed = 0;
+        int rtc_error = 0;
     };
 
     void InitialisePins();
