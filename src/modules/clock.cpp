@@ -23,6 +23,9 @@ bool clock::InitialiseClock() {
 
     if (rtc.begin()) {
         Serial.println("---- RTC Module Connected! ----");
+        
+        // Sets the time of the RTC to be the time when the code was compiled
+        //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         return true;
     } else {
         Serial.println("---- Failed to find RTC Module ----");
@@ -78,7 +81,7 @@ void clock::SetDate() {
 
     // Delay that also checks the sate of the global interrupt mode flag, ensuring that if the mode is changed, the MCU doesnt get stuck in a delay and cause lag for the user
     unsigned long start_time = millis();
-    while (millis() - start_time < 10000) {
+    while (millis() - start_time < 5000) {
         if (config::global_flags.mode_changed == 1) break;
 
         display::SetDigit(dateTimeHandler.day_1, 1, segs_1, segs_2);
@@ -92,7 +95,7 @@ void clock::SetDate() {
     }
 
     start_time = millis();
-    while (millis() - start_time < 10000) {
+    while (millis() - start_time < 5000) {
         if (config::global_flags.mode_changed == 1) break;
 
         display::SetDigit(dateTimeHandler.year_1, 1, segs_1, segs_2);

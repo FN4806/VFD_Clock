@@ -19,5 +19,5 @@ void DateTimeHandler::GetDigits(const DateTime& date) {
     year_1 = floor(date.year()/1000);
     year_2 = floor((date.year() - (year_1*1000))/100);
     year_4 = date.year() % 10;
-    year_3 = floor((date.year()%100)-year_4);
+    year_3 = floor(((date.year()%100)-year_4)/10);
 }
