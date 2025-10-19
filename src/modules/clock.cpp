@@ -112,7 +112,7 @@ bool ClockFunctionality::InitialiseClock() {
         Serial.println("---- RTC Module Connected! ----");
         
         // Sets the time of the RTC to be the time when the code was compiled
-        rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+        //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         return true;
     } else {
         Serial.println("---- Failed to find RTC Module ----");
