@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <RTClib.h>
+#include <time.h>
 #include <Temperature_LM75_Derived.h>
 
 #include "modules/clock.h"
@@ -10,8 +11,6 @@
 RTC_DS1307 rtc;
 Generic_LM75 tempSensor;
 
-using namespace clock;
-
 // Setting place, e.g. 0 = hh, 1 = mm
 int setting_place = 0;
 
@@ -19,24 +18,86 @@ int setting_place = 0;
 int day_segs_1[7] = {0b00011, 0b00001, 0b00010, 0b00011, 0b00000, 0b00001, 0b00010};
 int day_segs_2[7] = {0b0001, 0b0000, 0b0000, 0b0000, 0b0001, 0b0001, 0b0001};
 
-int clock::segs_1 = 0;
-int clock::segs_2 = 0;
+int ClockFunctionality::segs_1 = 0;
+int ClockFunctionality::segs_2 = 0;
 
 // -------------------------
 // ---- Local Functions ----
 // -------------------------
 
-void SetTime() {
+void AdjustTime() {
     static unsigned long first_called = millis(); 
-    // Flash digits currently being set, e.g. hh or mm
-    // Use up and down buttons to set time
-    // use mode button to move between hh and mm
-    // finish setting time with the set button
+    static bool first_loop = true;
 
-    // Needs to handle:
-    // Flashing
-    // Variables to increase time
-    // Setting the RTC time with those variables
+    if (first_loop) {
+        DateTime now = rtc.now();
+
+        config::time_setting.hh = now.hour();
+        config::time_setting.mm = now.minute();
+        config::time_setting.DD = now.day();
+        config::time_setting.MM = now.month();
+        config::time_setting.YYYY = now.year();
+    }
+
+    DateTimeHandler dateTimeHandler;
+    dateTimeHandler.GetDigitsByPart(
+        config::time_setting.mm, 
+        config::time_setting.hh,
+        config::time_setting.DD,
+        config::time_setting.MM,
+        config::time_setting.YYYY
+    );
+
+    unsigned long start_time = millis();
+    while (millis() - start_time < 200) {
+        if (config::global_flags.mode_changed == 1) break;
+
+        display::SetDigit(dateTimeHandler.hour_1, 1, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        delay(2);
+        display::SetDigit(dateTimeHandler.hour_2, 2, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        delay(2);
+        display::SetDigit(dateTimeHandler.minute_1, 3, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        delay(2);
+        display::SetDigit(dateTimeHandler.minute_2, 4, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        delay(2);
+    }
+    
+    start_time = millis();
+    while (millis() - start_time < 200) {
+        if (config::global_flags.mode_changed == 1) break;
+
+        if (config::time_setting.flash_mode == 0) {
+            display::SetDigit(dateTimeHandler.minute_1, 3, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+            delay(2);
+            display::SetDigit(dateTimeHandler.minute_2, 4, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+            delay(2);
+        } else {
+            display::SetDigit(dateTimeHandler.hour_1, 1, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+            delay(2);
+            display::SetDigit(dateTimeHandler.hour_2, 2, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+            delay(2);
+        }
+    }
+
+    first_loop = false;
+    if (config::global_flags.time_set == 1) {
+
+        dateTimeHandler.JoinDigits();
+        DateTime new_time = DateTime(
+            dateTimeHandler.year, 
+            dateTimeHandler.month, 
+            dateTimeHandler.day, 
+            dateTimeHandler.hours, 
+            dateTimeHandler.minutes, 
+            0
+        );
+        
+        rtc.adjust(new_time);
+
+        first_loop = true;
+        config::global_flags.time_set = 0;
+        config::global_flags.adjust_active = 0;
+    }
     
 }
 
@@ -45,13 +106,13 @@ void SetTime() {
 // ---- Global Access Functions ----
 // ---------------------------------
 
-bool clock::InitialiseClock() {
+bool ClockFunctionality::InitialiseClock() {
 
     if (rtc.begin()) {
         Serial.println("---- RTC Module Connected! ----");
         
         // Sets the time of the RTC to be the time when the code was compiled
-        //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+        rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         return true;
     } else {
         Serial.println("---- Failed to find RTC Module ----");
@@ -59,10 +120,10 @@ bool clock::InitialiseClock() {
     }
 }
 
-void clock::SetTime() {
+void ClockFunctionality::SetTime() {
 
     if (config::global_flags.adjust_active == 1) {
-        SetTime();
+        AdjustTime();
         return;
     }
 
@@ -71,6 +132,7 @@ void clock::SetTime() {
     segs_2 = segs_2 & 0b0101;
 
     if (config::global_flags.rtc_error == 1) {
+        Serial.println("Fatal RTC error, check connection to RTC module");
         DisplayError();
         return;
     }
@@ -91,7 +153,7 @@ void clock::SetTime() {
     delay(2);
 }
 
-void clock::SetDate() {        
+void ClockFunctionality::SetDate() {        
     segs_1 = segs_1 & 0b01011;
     segs_2 = segs_2 & 0b0011;
     segs_2 = segs_2 | 0b0010;
@@ -137,7 +199,7 @@ void clock::SetDate() {
     }
 }
 
-void clock::SetTemp() {
+void ClockFunctionality::SetTemp() {
     DateTime now = rtc.now();
     SetDayOfWeek(now.dayOfTheWeek());
 
@@ -156,14 +218,14 @@ void clock::SetTemp() {
     delay(2);
 }
 
-void clock::SetDayOfWeek(int day) {
+void ClockFunctionality::SetDayOfWeek(int day) {
     segs_1 = segs_1 & 0b11100;
     segs_2 = segs_2 & 0b1110;
     segs_1 = segs_1 | day_segs_1[day];
     segs_2 = segs_2 | day_segs_2[day];
 }
 
-void clock::DisplayError() {
+void ClockFunctionality::DisplayError() {
     display::SetDigit(13, 1, segs_1, segs_2);
     delay(2);
     display::SetDigit(14, 2, segs_1, segs_2);

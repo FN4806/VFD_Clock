@@ -1,7 +1,8 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
-namespace clock {
+namespace ClockFunctionality
+{
     // minutes, circle, time, centre dash, right dash
     extern int segs_1;
     // temperature, seconds, mode, left dash

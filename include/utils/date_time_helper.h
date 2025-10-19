@@ -18,7 +18,18 @@ class DateTimeHandler {
         int year_3;
         int year_4;
 
+        int minutes;
+        int hours;
+        int day;
+        int month;
+        int year;
+
         void GetDigits(const DateTime& date);
+        // Setting to zero in the initial decleration means that each parameter is optional and does not HAVE to be parsed 
+        // since it will default the value to 0 
+        void GetDigitsByPart(const int& mm = 0, const int& hh = 0, const int& DD = 0, const int& MM = 0, const int& YYYY = 0);
+        
+        void JoinDigits();
 };
 
 

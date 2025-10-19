@@ -15,10 +15,12 @@ namespace config {
     struct GlobalFlags {
         volatile int mode_changed = 0;
         volatile int adjust_active = 0;
+        volatile int time_set = 0;
         int rtc_error = 0;
     };
 
     struct TimeSetting {
+        volatile int flash_mode = 0;
         int hh = 0;
         int mm = 0;
         int DD = 0;
