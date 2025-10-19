@@ -12,12 +12,38 @@ Generic_LM75 tempSensor;
 
 using namespace clock;
 
+// Setting place, e.g. 0 = hh, 1 = mm
+int setting_place = 0;
+
 // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday 
 int day_segs_1[7] = {0b00011, 0b00001, 0b00010, 0b00011, 0b00000, 0b00001, 0b00010};
 int day_segs_2[7] = {0b0001, 0b0000, 0b0000, 0b0000, 0b0001, 0b0001, 0b0001};
 
 int clock::segs_1 = 0;
 int clock::segs_2 = 0;
+
+// -------------------------
+// ---- Local Functions ----
+// -------------------------
+
+void SetTime() {
+    static unsigned long first_called = millis(); 
+    // Flash digits currently being set, e.g. hh or mm
+    // Use up and down buttons to set time
+    // use mode button to move between hh and mm
+    // finish setting time with the set button
+
+    // Needs to handle:
+    // Flashing
+    // Variables to increase time
+    // Setting the RTC time with those variables
+    
+}
+
+
+// ---------------------------------
+// ---- Global Access Functions ----
+// ---------------------------------
 
 bool clock::InitialiseClock() {
 
@@ -34,6 +60,12 @@ bool clock::InitialiseClock() {
 }
 
 void clock::SetTime() {
+
+    if (config::global_flags.adjust_active == 1) {
+        SetTime();
+        return;
+    }
+
     segs_1 = segs_1 | 0b10100;
     segs_2 = segs_2 | 0b0100;
     segs_2 = segs_2 & 0b0101;
@@ -46,10 +78,6 @@ void clock::SetTime() {
     DateTime now = rtc.now();
     DateTimeHandler dateTimeHandler;
     dateTimeHandler.GetDigits(now);
-
-    Serial.print(now.hour());
-    Serial.print(":");
-    Serial.println(now.minute());
 
     SetDayOfWeek(now.dayOfTheWeek());
 

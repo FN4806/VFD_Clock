@@ -4,6 +4,7 @@
 namespace config {
     Pins pins{};
     GlobalFlags global_flags{};
+    TimeSetting time_setting{};
 
     void InitialisePins() {
         pinMode(pins.kSerialData, OUTPUT);

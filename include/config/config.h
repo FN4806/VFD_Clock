@@ -14,13 +14,23 @@ namespace config {
 
     struct GlobalFlags {
         volatile int mode_changed = 0;
+        volatile int adjust_active = 0;
         int rtc_error = 0;
+    };
+
+    struct TimeSetting {
+        int hh = 0;
+        int mm = 0;
+        int DD = 0;
+        int MM = 0;
+        int YYYY = 0;
     };
 
     void InitialisePins();
 
     extern GlobalFlags global_flags;
     extern Pins pins;
+    extern TimeSetting time_setting;
 }
 
 #endif

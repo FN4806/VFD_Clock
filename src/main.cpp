@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <RTClib.h>
 #include <Temperature_LM75_Derived.h>
+#include <string.h>
 
 #include "config/config.h"
 #include "modules/display.h"
@@ -29,12 +30,34 @@ void ModeButtonInterrupt() {
   }
 }
 
+void SetTimeInterrupt() {
+  int pinState = digitalRead(config::pins.kSetButton);
+  static unsigned long first_pressed = millis();
+
+  int seconds_pressed = (millis() - first_pressed) / 1000;
+
+  if (pinState == 0) {
+    first_pressed = millis();
+  } else if (millis() - first_pressed > 2000) {
+    
+    Serial.print("Button held for ");
+    Serial.print(seconds_pressed);
+    Serial.println("s!");
+
+    if (config::global_flags.adjust_active == 0) config::global_flags.adjust_active = 1; else config::global_flags.adjust_active = 0;
+    
+    first_pressed = millis();
+  }
+}
 void setup() {
+  Serial.begin(9600);
+
   if (!InitialiseClock()) {
     config::global_flags.rtc_error = 1;
   }
 
   attachInterrupt(digitalPinToInterrupt(config::pins.kModeButton), ModeButtonInterrupt, FALLING);
+  attachInterrupt(digitalPinToInterrupt(config::pins.kSetButton), SetTimeInterrupt, CHANGE);
   config::InitialisePins();
 }
 
