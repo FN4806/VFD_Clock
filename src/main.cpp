@@ -11,7 +11,7 @@ using namespace display;
 using namespace ClockFunctionality;
 
 int Mode = 0; // 0 = time, 1 = date, 2 = temp, 3 = time setup mode, 10 = Fatal Error
-int MaxMode = 2; 
+int MaxMode = 2; // The highest mode available for the microcontroller
 
 void IncrementInterrupt() {
   static bool first_press = true;
@@ -131,10 +131,6 @@ void setDisplay() {
 
   case 2:
     SetTemp();
-    break;
-
-  case 10:
-    DisplayError();
     break;
   }
 }
