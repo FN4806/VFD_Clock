@@ -21,6 +21,7 @@ namespace config {
 
     struct TimeSetting {
         volatile int flash_mode = 0;
+        volatile int mode = 0;
         int hh = 0;
         int mm = 0;
         int DD = 0;

@@ -31,7 +31,6 @@ void AdjustTime() {
 
     if (first_loop) {
         DateTime now = rtc.now();
-
         config::time_setting.hh = now.hour();
         config::time_setting.mm = now.minute();
         config::time_setting.DD = now.day();
@@ -48,17 +47,42 @@ void AdjustTime() {
         config::time_setting.YYYY
     );
 
+    int segment_1;
+    int segment_2;
+    int segment_3;
+    int segment_4;
+
+    if (config::time_setting.mode == 0) {
+        segment_1 = dateTimeHandler.hour_1;
+        segment_2 = dateTimeHandler.hour_2;
+        segment_3 = dateTimeHandler.minute_1;
+        segment_4 = dateTimeHandler.minute_2;
+
+    } else if (config::time_setting.mode == 1) {
+        if (config::time_setting.flash_mode <= 1) {
+            segment_1 = dateTimeHandler.day_1;
+            segment_2 = dateTimeHandler.day_2;
+            segment_3 = dateTimeHandler.month_1;
+            segment_4 = dateTimeHandler.month_2;
+        } else {
+            segment_1 = dateTimeHandler.year_1;
+            segment_2 = dateTimeHandler.year_2;
+            segment_3 = dateTimeHandler.year_3;
+            segment_4 = dateTimeHandler.year_4;
+        }
+    }
+
     unsigned long start_time = millis();
     while (millis() - start_time < 200) {
         if (config::global_flags.mode_changed == 1) break;
 
-        display::SetDigit(dateTimeHandler.hour_1, 1, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        display::SetDigit(segment_1, 1, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
         delay(2);
-        display::SetDigit(dateTimeHandler.hour_2, 2, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        display::SetDigit(segment_2, 2, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
         delay(2);
-        display::SetDigit(dateTimeHandler.minute_1, 3, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        display::SetDigit(segment_3, 3, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
         delay(2);
-        display::SetDigit(dateTimeHandler.minute_2, 4, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        display::SetDigit(segment_4, 4, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
         delay(2);
     }
     
@@ -66,15 +90,15 @@ void AdjustTime() {
     while (millis() - start_time < 200) {
         if (config::global_flags.mode_changed == 1) break;
 
-        if (config::time_setting.flash_mode == 0) {
-            display::SetDigit(dateTimeHandler.minute_1, 3, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+        if (config::time_setting.flash_mode == 0 or config::time_setting.flash_mode == 2) {
+            display::SetDigit(segment_3, 3, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
-            display::SetDigit(dateTimeHandler.minute_2, 4, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+            display::SetDigit(segment_4, 4, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
         } else {
-            display::SetDigit(dateTimeHandler.hour_1, 1, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+            display::SetDigit(segment_1, 1, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
-            display::SetDigit(dateTimeHandler.hour_2, 2, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+            display::SetDigit(segment_2, 2, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
         }
     }
@@ -100,7 +124,6 @@ void AdjustTime() {
     }
     
 }
-
 
 // ---------------------------------
 // ---- Global Access Functions ----

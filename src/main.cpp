@@ -72,7 +72,15 @@ void ModeButtonInterrupt() {
       Mode = 0;
     }
   } else if ((config::global_flags.adjust_active == 1) and (first_press or (millis() - last_pressed >= 200))) {
-    if (config::time_setting.flash_mode == 0) config::time_setting.flash_mode = 1; else config::time_setting.flash_mode = 0;
+
+    if (Mode == 1) {
+      config::time_setting.flash_mode++;
+      if (config::time_setting.flash_mode > 3) {
+        config::time_setting.flash_mode = 0;
+      }
+    } else {
+      if (config::time_setting.flash_mode == 0) config::time_setting.flash_mode = 1; else config::time_setting.flash_mode = 0;
+    }
   }
 }
 
@@ -95,6 +103,7 @@ void SetTimeInterrupt() {
     first_pressed = millis();
   }
 }
+
 void setup() {
   Serial.begin(9600);
 
