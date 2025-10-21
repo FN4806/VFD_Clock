@@ -4,7 +4,7 @@
 ![Language](https://img.shields.io/badge/C++-blue)
 ![Microcontroller](https://img.shields.io/badge/Arduino_Nano_Every-lightgrey)
 ![License](https://img.shields.io/badge/MIT_License-green)
-![Status](https://img.shields.io/badge/In_Development-orange)
+![Status](https://img.shields.io/badge/In_Development-yellow)
 
 ## Features
 
