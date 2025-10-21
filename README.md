@@ -1,4 +1,4 @@
-# Vacuum Flourecent Display Clock Project
+# **Vacuum Flourecent Display Clock Project**
 
 ![PlatformIO](https://img.shields.io/badge/PlatformIO-F5822A?logo=platformio&logoColor=white)
 ![Language](https://img.shields.io/badge/C++-00599C?logo=cplusplus)
