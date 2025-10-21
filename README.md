@@ -2,7 +2,7 @@
 
 ![PlatformIO](https://img.shields.io/badge/PlatformIO-orange)
 ![Language](https://img.shields.io/badge/C++-blue)
-![Microcontroller](https://img.shields.io/badge/Arduino_Nano_Every-lightgrey)
+![Microcontroller](https://img.shields.io/badge/Arduino_Nano_Every-lightgrey?logo=arduino)
 ![License](https://img.shields.io/badge/MIT_License-green)
 ![Status](https://img.shields.io/badge/Ongoing_Development-yellow)
 
