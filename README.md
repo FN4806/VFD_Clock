@@ -26,9 +26,9 @@
 - Custom EEPROM-Based BCD to Hexidecimal Segment Decoder
 - SPI Interfacing with 2x Shift Registers
 - Discrete Segement Control
- - AND Chips
- - OR Chips
- - NOT Chips
+  - AND Chips
+  - OR Chips
+  - NOT Chips
 - Segment Voltage Control Using AN 
 
 ## Firmware
