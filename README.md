@@ -6,18 +6,27 @@
 ![CAD](https://img.shields.io/badge/KiCad-314CB0?logo=kicad)
 ## Features
 
-### Current: 
+#### Current: 
 - Date and Time Viewing
 - Date and Time Setting 
 - Temperature Sensing Mode
 - Day of the Week Indicator
 - RTC Module for Accurate Timekeeping
 
-### Planned:
+#### Planned:
 - Alarm 
 
 ## Hardware
 
+#### Components Used: 
+- Arduino Nano Every Microcontroller
+- Unknown Origin VFD
+- Real-Time Clock Module
+- Temperature Sensing Module
+- Custom EEPROM-Based BCD to Hexidecimal Segment Decoder
+- SPI Interfacing with 2x Shift Registers
+- Discrete Segement Control Logic Using AND, OR and NOT gates
+- Vol
 
 ## Firmware
 
