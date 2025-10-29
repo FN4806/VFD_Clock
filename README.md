@@ -22,14 +22,16 @@
 - Arduino Nano Every Microcontroller
 - Unknown Origin VFD
 - Real-Time Clock Module
-- Temperature Sensing Module
-- Custom EEPROM-Based BCD to Hexidecimal Segment Decoder
-- SPI Interfacing with 2x Shift Registers
-- Discrete Segement Control
-  - AND Chips
-  - OR Chips
-  - NOT Chips
-- Segment Voltage Control Using AN 
+- LM75 Temperature Sensing Module
+- Custom BCD to Hexidecimal Segment Decoder
+  - Using 1x AT28C64B-15PU EEPROM IC
+- SPI Interfacing
+  - Using 2x SN74HC595N Shift Registers
+- Discrete Segement Control Logic
+  - 2x SN74HC08N AND ICs
+  - 1x SN74LS04N NOT IC
+- Segment Voltage Control 
+  - 3x AN6118 ICs
 
 ## Firmware
 
