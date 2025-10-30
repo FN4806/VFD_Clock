@@ -11,7 +11,7 @@ using namespace display;
 using namespace ClockFunctionality;
 
 int Mode = 0; // 0 = time, 1 = date, 2 = temp, 3 = time setup mode, 10 = Fatal Error
-int MaxMode = 2; 
+int MaxMode = 2; // The highest mode available for the microcontroller
 
 void IncrementInterrupt() {
   static bool first_press = true;
@@ -72,7 +72,15 @@ void ModeButtonInterrupt() {
       Mode = 0;
     }
   } else if ((config::global_flags.adjust_active == 1) and (first_press or (millis() - last_pressed >= 200))) {
-    if (config::time_setting.flash_mode == 0) config::time_setting.flash_mode = 1; else config::time_setting.flash_mode = 0;
+
+    if (Mode == 1) {
+      config::time_setting.flash_mode++;
+      if (config::time_setting.flash_mode > 3) {
+        config::time_setting.flash_mode = 0;
+      }
+    } else {
+      if (config::time_setting.flash_mode == 0) config::time_setting.flash_mode = 1; else config::time_setting.flash_mode = 0;
+    }
   }
 }
 
@@ -95,6 +103,7 @@ void SetTimeInterrupt() {
     first_pressed = millis();
   }
 }
+
 void setup() {
   Serial.begin(9600);
 
@@ -122,10 +131,6 @@ void setDisplay() {
 
   case 2:
     SetTemp();
-    break;
-
-  case 10:
-    DisplayError();
     break;
   }
 }
