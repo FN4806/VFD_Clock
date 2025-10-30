@@ -20,22 +20,13 @@ namespace config {
     };
 
     struct TimeSetting {
-<<<<<<< HEAD
         volatile int flash_mode{0};
+        volatile int mode{0};
         int hh{0};
         int mm{0};
         int DD{0};
         int MM{0};
         int YYYY{0};
-=======
-        volatile int flash_mode = 0;
-        volatile int mode = 0;
-        int hh = 0;
-        int mm = 0;
-        int DD = 0;
-        int MM = 0;
-        int YYYY = 0;
->>>>>>> 79f4f53e440dad120d0f24d230ffdb75bd322205
     };
 
     void InitialisePins();
