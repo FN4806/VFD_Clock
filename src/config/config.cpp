@@ -19,4 +19,3 @@ namespace config {
         pinMode(pins.kDownButton, INPUT_PULLUP);
     }
 }
-
