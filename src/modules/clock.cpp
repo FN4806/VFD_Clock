@@ -18,8 +18,11 @@ int setting_place = 0;
 int day_segs_1[7] = {0b00011, 0b00001, 0b00010, 0b00011, 0b00000, 0b00001, 0b00010};
 int day_segs_2[7] = {0b0001, 0b0000, 0b0000, 0b0000, 0b0001, 0b0001, 0b0001};
 
-int ClockFunctionality::segs_1 = 0;
-int ClockFunctionality::segs_2 = 0;
+/// @brief segs_1 contains the first 5 misc segments for control - min | circle | time | mid dash | right dash
+int ClockFunctionality::segs_1 = 0b00000;
+
+/// @brief segs_2 contains the last 4 misc segments for control - heating | sec | mode | left dash
+int ClockFunctionality::segs_2 = 0b0000;
 
 // -------------------------
 // ---- Local Functions ----
