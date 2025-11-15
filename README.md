@@ -42,20 +42,22 @@
   - Using 1x AT28C64B-15PU EEPROM IC
 - SPI Interfacing
   - Using 2x SN74HC595N Shift Registers
-- Discrete Segement Control Logic
+- Discrete Segment Control Logic
   - 2x SN74HC08N AND ICs
   - 1x SN74LS04N NOT IC
 - Segment Voltage Control Chips
   - 3x AN6118 ICs
-- Voltage Converters for Segment and Filament Volatges
-  - ~2.6V Buck Comverter for Filament Voltage 
-  - ~18V Boost Comverter for Segement Voltage
+- Voltage Converters for Segment and Filament Voltages
+  - ~2.6V Buck Converter for Filament Voltage 
+  - ~18V Boost Converter for Segment Voltage
 
 ## Firmware
 
 ## Circuit & Design   
 
 #### Initial Block Diagram:
+
+![Functional Block Diagram](images\VFD-Block-Diagram.png)
 
 #### Current Circuit Diagram:
 
