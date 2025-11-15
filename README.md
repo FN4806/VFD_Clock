@@ -54,3 +54,4 @@
 ## Firmware
 
 ## Circuit & Design   
+![Circuit Diagram](images\VFD-circuit-diagram.png)
