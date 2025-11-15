@@ -54,4 +54,13 @@
 ## Firmware
 
 ## Circuit & Design   
+
+#### Initial Block Diagram:
+
+#### Current Circuit Diagram:
+
 ![Circuit Diagram](images/VFD-circuit-diagram.png)
+
+#### PCB Design:
+
+![PCB Design](images/VFD-PCB-Design.png)
