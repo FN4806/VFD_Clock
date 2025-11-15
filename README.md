@@ -57,7 +57,7 @@
 
 #### Initial Block Diagram:
 
-![Functional Block Diagram](images\VFD-Block-Diagram.png)
+![Functional Block Diagram](images/VFD-Block-Diagram.png)
 
 #### Current Circuit Diagram:
 
