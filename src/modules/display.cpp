@@ -2,9 +2,23 @@
 #include "modules/display.h"
 #include "config/config.h"
 
-
 namespace display
 {
+
+  /// @brief  Flips the inputted BCD number
+  /// @param digit - The digit to be flipped 
+  /// @return flipped digit
+  int FlipDigit(int digit) {
+    int flipped_digit = 0;
+    int working_number = digit;
+    for (int i=3; i>=0; i--) {
+      // get bit in i position
+      flipped_digit |= (working_number >> i);
+      working_number -= (working_number & (1 << i));
+    }
+    return flipped_digit;
+  }
+
   void OutputData(int data1, int data2) {
     digitalWrite(config::pins.kDisplayChipEnable, LOW);
     digitalWrite(config::pins.kSerialClock, LOW);
@@ -17,6 +31,11 @@ namespace display
   }  
 
   void SetDigit(int digit, int segment, int extras_1, int extras_2) {
+    Serial.print("Digit = ");
+    Serial.print(digit);
+    Serial.print(" | ");
+    Serial.print("Flipped digit = ");
+    Serial.println(FlipDigit(digit));
     int output1 = 0;
     int output2 = 0;
     if (segment >= 1) { 
