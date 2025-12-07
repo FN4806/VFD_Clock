@@ -10,11 +10,16 @@ namespace display
   /// @return flipped digit
   int FlipDigit(int digit) {
     int flipped_digit = 0;
-    int working_number = digit;
-    for (int i=3; i>=0; i--) {
-      // get bit in i position
-      flipped_digit |= (working_number >> i);
-      working_number -= (working_number & (1 << i));
+    int check_digit = 0;
+
+    for (int i=0; i<4; i++) {
+      check_digit = 1 << i;
+      if ((digit & check_digit) > 0) {
+        flipped_digit = flipped_digit << 1;
+        flipped_digit = flipped_digit | 1;
+      } else {
+        flipped_digit = flipped_digit << 1;
+      }
     }
     return flipped_digit;
   }
@@ -31,16 +36,11 @@ namespace display
   }  
 
   void SetDigit(int digit, int segment, int extras_1, int extras_2) {
-    Serial.print("Digit = ");
-    Serial.print(digit);
-    Serial.print(" | ");
-    Serial.print("Flipped digit = ");
-    Serial.println(FlipDigit(digit));
     int output1 = 0;
     int output2 = 0;
     if (segment >= 1) { 
         output1 = ((segment - 1) << 6) | 0b00100000 | extras_1;
-        output2 = (extras_2 << 4) | digit;
+        output2 = (extras_2 << 4) | FlipDigit(digit);
     }
     else {
         output1 = 0b00000000 | extras_1;

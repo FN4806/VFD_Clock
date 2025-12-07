@@ -7,10 +7,23 @@
 #include "modules/display.h"
 #include "modules/clock.h"
 
+#include <DRV8835MotorShield.h>
+
+DRV8835MotorShield motor_1;
+
 using namespace display;
 using namespace ClockFunctionality;
 
 int Mode = 0; // 0 = time, 1 = date, 2 = temp, 3 = time setup mode, 10 = Fatal Error
+
+enum class Modes {
+  time = 0,
+  date,
+  temp,
+  time_setup
+};
+Modes mode = Modes::time;
+
 int MaxMode = 2; // The highest mode available for the microcontroller
 
 void IncrementInterrupt() {
@@ -19,17 +32,17 @@ void IncrementInterrupt() {
 
   if (first_press or (millis() - last_pressed >= 200)) {
 
-    if (Mode == 0 and config::time_setting.flash_mode == 0) { // Time setting hour
+    if (mode == Modes::time and config::time_setting.flash_mode == 0) { // Time setting hour
       if (config::time_setting.hh >= 24) config::time_setting.hh = 0; else config::time_setting.hh++;
 
-    } else if (Mode == 0 and config::time_setting.flash_mode == 1) { // Time setting minute
+    } else if (mode == Modes::time and config::time_setting.flash_mode == 1) { // Time setting minute
       if (config::time_setting.mm >= 59) config::time_setting.mm = 0; else config::time_setting.mm++;
 
-    } else if (Mode == 1 and config::time_setting.flash_mode == 0) { // Date setting day
+    } else if (mode == Modes::date and config::time_setting.flash_mode == 0) { // Date setting day
 
-    } else if (Mode == 1 and config::time_setting.flash_mode == 1) { // Date setting month
+    } else if (mode == Modes::date and config::time_setting.flash_mode == 1) { // Date setting month
 
-    } else if (Mode == 1 and config::time_setting.flash_mode == 2) { // Date setting year
+    } else if (mode == Modes::date and config::time_setting.flash_mode == 2) { // Date setting year
 
     }
   }
@@ -41,17 +54,17 @@ void DecrementInterrupt() {
 
   if (first_press or (millis() - last_pressed >= 200)) {
 
-    if (Mode == 0 and config::time_setting.flash_mode == 0) { // Time setting hour
+    if (mode == Modes::time and config::time_setting.flash_mode == 0) { // Time setting hour
       if (config::time_setting.hh <= 0) config::time_setting.hh = 24; else config::time_setting.hh--;
 
-    } else if (Mode == 0 and config::time_setting.flash_mode == 1) { // Time setting minutes
+    } else if (mode == Modes::time and config::time_setting.flash_mode == 1) { // Time setting minutes
       if (config::time_setting.mm <= 0) config::time_setting.mm = 59; else config::time_setting.mm--;
 
-    } else if (Mode == 1 and config::time_setting.flash_mode == 0) { // Date setting day
+    } else if (mode == Modes::date and config::time_setting.flash_mode == 0) { // Date setting day
 
-    } else if (Mode == 1 and config::time_setting.flash_mode == 1) { // Date setting month
+    } else if (mode == Modes::date and config::time_setting.flash_mode == 1) { // Date setting month
 
-    } else if (Mode == 1 and config::time_setting.flash_mode == 2) { // Date setting year
+    } else if (mode == Modes::date and config::time_setting.flash_mode == 2) { // Date setting year
 
     }
   }
