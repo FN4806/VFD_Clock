@@ -6,16 +6,14 @@
 #include "config/config.h"
 #include "modules/display.h"
 #include "modules/clock.h"
-
-#include <DRV8835MotorShield.h>
-
-DRV8835MotorShield motor_1;
+#include "utils/date_time_helper.h"
 
 using namespace display;
 using namespace ClockFunctionality;
 
 int Mode = 0; // 0 = time, 1 = date, 2 = temp, 3 = time setup mode, 10 = Fatal Error
 
+// Future implementation: use enum instead of int value to store the mode
 enum class Modes {
   time = 0,
   date,
@@ -31,6 +29,8 @@ void IncrementInterrupt() {
   static unsigned long last_pressed = millis();
 
   if (first_press or (millis() - last_pressed >= 200)) {
+    first_press = false;
+    last_pressed = millis();
 
     if (mode == Modes::time and config::time_setting.flash_mode == 0) { // Time setting hour
       if (config::time_setting.hh >= 24) config::time_setting.hh = 0; else config::time_setting.hh++;
@@ -39,11 +39,14 @@ void IncrementInterrupt() {
       if (config::time_setting.mm >= 59) config::time_setting.mm = 0; else config::time_setting.mm++;
 
     } else if (mode == Modes::date and config::time_setting.flash_mode == 0) { // Date setting day
-
+      if (config::time_setting.DD >= DateTimeHandler::CheckDays(config::time_setting.MM, config::time_setting.YYYY)) config::time_setting.DD = 0; else config::time_setting.DD++;
+      
     } else if (mode == Modes::date and config::time_setting.flash_mode == 1) { // Date setting month
+      if (config::time_setting.MM >= 12) config::time_setting.MM = 0; else config::time_setting.MM++;
 
     } else if (mode == Modes::date and config::time_setting.flash_mode == 2) { // Date setting year
-
+      // DS1307 RTC Chip has a date range of 00-99 (preceeded by 20 for 2000-2099)
+      if (config::time_setting.YYYY >= 2099) config::time_setting.YYYY = 2000; else config::time_setting.YYYY++;
     }
   }
 }
@@ -53,6 +56,8 @@ void DecrementInterrupt() {
   static unsigned long last_pressed = millis();
 
   if (first_press or (millis() - last_pressed >= 200)) {
+    first_press = false;
+    last_pressed = millis();
 
     if (mode == Modes::time and config::time_setting.flash_mode == 0) { // Time setting hour
       if (config::time_setting.hh <= 0) config::time_setting.hh = 24; else config::time_setting.hh--;
@@ -61,10 +66,14 @@ void DecrementInterrupt() {
       if (config::time_setting.mm <= 0) config::time_setting.mm = 59; else config::time_setting.mm--;
 
     } else if (mode == Modes::date and config::time_setting.flash_mode == 0) { // Date setting day
+      if (config::time_setting.DD <= 0) config::time_setting.DD = DateTimeHandler::CheckDays(config::time_setting.MM, config::time_setting.YYYY); else config::time_setting.DD--;
 
     } else if (mode == Modes::date and config::time_setting.flash_mode == 1) { // Date setting month
+      if (config::time_setting.MM <= 0) config::time_setting.MM = 12; else config::time_setting.MM--;
 
     } else if (mode == Modes::date and config::time_setting.flash_mode == 2) { // Date setting year
+      // DS1307 RTC Chip has a date range of 00-99 (preceeded by 20 for 2000-2099)
+      if (config::time_setting.YYYY <= 2000) config::time_setting.YYYY = 2099; else config::time_setting.YYYY--;
 
     }
   }
@@ -74,7 +83,7 @@ void ModeButtonInterrupt() {
   static bool first_press = true;
   static unsigned long last_pressed = millis();
 
-  if ((config::global_flags.mode_changed == 0) and (first_press or (millis() - last_pressed >= 200)) and (config::global_flags.adjust_active ==0)) {
+  if ((config::global_flags.mode_changed == 0) and (first_press or (millis() - last_pressed >= 200)) and (config::global_flags.adjust_active == 0)) {
     first_press = false;
     last_pressed = millis();
     config::global_flags.mode_changed = 1;
@@ -85,6 +94,8 @@ void ModeButtonInterrupt() {
       Mode = 0;
     }
   } else if ((config::global_flags.adjust_active == 1) and (first_press or (millis() - last_pressed >= 200))) {
+    first_press = false;
+    last_pressed = millis();
 
     if (Mode == 1) {
       config::time_setting.flash_mode++;
@@ -118,7 +129,7 @@ void SetTimeInterrupt() {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   if (!InitialiseClock()) {
     config::global_flags.rtc_error = 1;

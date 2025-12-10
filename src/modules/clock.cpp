@@ -147,12 +147,6 @@ bool ClockFunctionality::InitialiseClock() {
 }
 
 void ClockFunctionality::SetTime() {
-
-    if (config::global_flags.adjust_active == 1) {
-        AdjustTime();
-        return;
-    }
-
     segs_1 = segs_1 | 0b10100;
     segs_2 = segs_2 | 0b0100;
     segs_2 = segs_2 & 0b0101;
@@ -160,6 +154,11 @@ void ClockFunctionality::SetTime() {
     if (config::global_flags.rtc_error == 1) {
         Serial.println("Fatal RTC error, check connection to RTC module");
         DisplayError();
+        return;
+    }
+
+    if (config::global_flags.adjust_active == 1) {
+        AdjustTime();
         return;
     }
 
@@ -179,12 +178,13 @@ void ClockFunctionality::SetTime() {
     delay(2);
 }
 
-void ClockFunctionality::SetDate() {        
+void ClockFunctionality::SetDate() {
     segs_1 = segs_1 & 0b01011;
     segs_2 = segs_2 & 0b0011;
     segs_2 = segs_2 | 0b0010;
 
     if (config::global_flags.rtc_error == 1) {
+        Serial.println("Fatal RTC error, check connection to RTC module");
         DisplayError();
         return;
     }

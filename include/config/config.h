@@ -2,6 +2,15 @@
 #define CONFIG_H
 
 namespace config {
+    // Future Implementation: Switch to Enums
+    enum class time_setting_modes {
+        time_hh = 0,
+        time_mm = 1,
+        date_dd = 2,
+        date_mm = 3,
+        date_yyyy = 4
+    };
+
     struct Pins {
         const int kSerialData{11};
         const int kDisplayChipEnable{10};

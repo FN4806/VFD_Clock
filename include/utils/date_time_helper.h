@@ -30,6 +30,10 @@ class DateTimeHandler {
         void GetDigitsByPart(const int& mm = 0, const int& hh = 0, const int& DD = 0, const int& MM = 0, const int& YYYY = 0);
         
         void JoinDigits();
+
+        static int CheckDays(int month, int year);
+
+        static bool IsLeapYear(int year);
 };
 
 

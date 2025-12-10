@@ -66,3 +66,8 @@
 #### PCB Design:
 
 ![PCB Design](images/VFD-PCB-Design.png)
+This is the first design for a PCB for this project, and as such it is not without it's bugs! However, the PCB is functional and the clock still works.
+Firstly, the 4-bit address bus connected to the eeprom is wired in reverse, this was fixed in software using a function to flip the bits around.
+Secondly, the footprint used for the 5-pin JST connected was incorrect for the style I had, to rectify this I simply soldered some wires directly to the pad. 
+
+In the next redesign, I need to fix the two existing hardware bugs, but also I would like to reduce the size of the PCB with some layout optimisation. 
