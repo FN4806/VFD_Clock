@@ -32,19 +32,19 @@ void IncrementInterrupt() {
     first_press = false;
     last_pressed = millis();
 
-    if (mode == Modes::time and config::time_setting.flash_mode == 0) { // Time setting hour
+    if (Mode == 0 and config::time_setting.flash_mode == 0) { // Time setting hour
       if (config::time_setting.hh >= 24) config::time_setting.hh = 0; else config::time_setting.hh++;
 
-    } else if (mode == Modes::time and config::time_setting.flash_mode == 1) { // Time setting minute
+    } else if (Mode == 0 and config::time_setting.flash_mode == 1) { // Time setting minute
       if (config::time_setting.mm >= 59) config::time_setting.mm = 0; else config::time_setting.mm++;
 
-    } else if (mode == Modes::date and config::time_setting.flash_mode == 0) { // Date setting day
-      if (config::time_setting.DD >= DateTimeHandler::CheckDays(config::time_setting.MM, config::time_setting.YYYY)) config::time_setting.DD = 0; else config::time_setting.DD++;
+    } else if (Mode == 1 and config::time_setting.flash_mode == 0) { // Date setting day
+      if (config::time_setting.DD >= DateTimeHandler::CheckDays(config::time_setting.MM, config::time_setting.YYYY)) config::time_setting.DD = 1; else config::time_setting.DD++;
       
-    } else if (mode == Modes::date and config::time_setting.flash_mode == 1) { // Date setting month
-      if (config::time_setting.MM >= 12) config::time_setting.MM = 0; else config::time_setting.MM++;
+    } else if (Mode == 1 and config::time_setting.flash_mode == 1) { // Date setting month
+      if (config::time_setting.MM >= 12) config::time_setting.MM = 1; else config::time_setting.MM++;
 
-    } else if (mode == Modes::date and config::time_setting.flash_mode == 2) { // Date setting year
+    } else if (Mode == 1 and config::time_setting.flash_mode == 2) { // Date setting year
       // DS1307 RTC Chip has a date range of 00-99 (preceeded by 20 for 2000-2099)
       if (config::time_setting.YYYY >= 2099) config::time_setting.YYYY = 2000; else config::time_setting.YYYY++;
     }
@@ -59,19 +59,19 @@ void DecrementInterrupt() {
     first_press = false;
     last_pressed = millis();
 
-    if (mode == Modes::time and config::time_setting.flash_mode == 0) { // Time setting hour
+    if (Mode == 0 and config::time_setting.flash_mode == 0) { // Time setting hour
       if (config::time_setting.hh <= 0) config::time_setting.hh = 24; else config::time_setting.hh--;
 
-    } else if (mode == Modes::time and config::time_setting.flash_mode == 1) { // Time setting minutes
+    } else if (Mode == 0 and config::time_setting.flash_mode == 1) { // Time setting minutes
       if (config::time_setting.mm <= 0) config::time_setting.mm = 59; else config::time_setting.mm--;
 
-    } else if (mode == Modes::date and config::time_setting.flash_mode == 0) { // Date setting day
-      if (config::time_setting.DD <= 0) config::time_setting.DD = DateTimeHandler::CheckDays(config::time_setting.MM, config::time_setting.YYYY); else config::time_setting.DD--;
+    } else if (Mode == 1 and config::time_setting.flash_mode == 0) { // Date setting day
+      if (config::time_setting.DD <= 1) config::time_setting.DD = DateTimeHandler::CheckDays(config::time_setting.MM, config::time_setting.YYYY); else config::time_setting.DD--;
 
-    } else if (mode == Modes::date and config::time_setting.flash_mode == 1) { // Date setting month
-      if (config::time_setting.MM <= 0) config::time_setting.MM = 12; else config::time_setting.MM--;
+    } else if (Mode == 1 and config::time_setting.flash_mode == 1) { // Date setting month
+      if (config::time_setting.MM <= 1) config::time_setting.MM = 12; else config::time_setting.MM--;
 
-    } else if (mode == Modes::date and config::time_setting.flash_mode == 2) { // Date setting year
+    } else if (Mode == 1 and config::time_setting.flash_mode == 2) { // Date setting year
       // DS1307 RTC Chip has a date range of 00-99 (preceeded by 20 for 2000-2099)
       if (config::time_setting.YYYY <= 2000) config::time_setting.YYYY = 2099; else config::time_setting.YYYY--;
 
@@ -93,13 +93,14 @@ void ModeButtonInterrupt() {
     } else {
       Mode = 0;
     }
+
   } else if ((config::global_flags.adjust_active == 1) and (first_press or (millis() - last_pressed >= 200))) {
     first_press = false;
     last_pressed = millis();
-
+    
     if (Mode == 1) {
       config::time_setting.flash_mode++;
-      if (config::time_setting.flash_mode > 3) {
+      if (config::time_setting.flash_mode >= 3) {
         config::time_setting.flash_mode = 0;
       }
     } else {
@@ -121,6 +122,9 @@ void SetTimeInterrupt() {
     Serial.print("Button held for ");
     Serial.print(seconds_pressed);
     Serial.println("s!");
+
+    config::global_flags.mode_changed = 1;
+    config::time_setting.mode = Mode;
 
     if (config::global_flags.adjust_active == 0) config::global_flags.adjust_active = 1; else config::global_flags.time_set = 1;
     

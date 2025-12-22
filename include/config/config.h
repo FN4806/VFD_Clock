@@ -29,7 +29,7 @@ namespace config {
     };
 
     struct TimeSetting {
-        volatile int flash_mode{0};
+        volatile int flash_mode{0}; // 0 = hh/DD, 1 = mm/MM, 2 == YYYY
         volatile int mode{0};
         int hh{0};
         int mm{0};

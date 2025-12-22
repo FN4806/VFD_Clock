@@ -93,22 +93,27 @@ void AdjustTime() {
     while (millis() - start_time < 200) {
         if (config::global_flags.mode_changed == 1) break;
 
-        if (config::time_setting.flash_mode == 0 or config::time_setting.flash_mode == 2) {
+        if (config::time_setting.flash_mode == 0) {
             display::SetDigit(segment_3, 3, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
             display::SetDigit(segment_4, 4, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
-        } else {
+        } else if (config::time_setting.flash_mode == 1) {
             display::SetDigit(segment_1, 1, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
             display::SetDigit(segment_2, 2, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
         }
+        // If mode is 3, flash whole disp off anyway
+        // FUTURE:
+        // Add another display function that displays no digit but displays extras
+        // hint: use the master control line for the grids 
     }
 
     first_loop = false;
     if (config::global_flags.time_set == 1) {
 
+        // Construct DateTime of new time
         dateTimeHandler.JoinDigits();
         DateTime new_time = DateTime(
             dateTimeHandler.year, 
@@ -119,8 +124,10 @@ void AdjustTime() {
             0
         );
         
+        // Set new time into RTC memory
         rtc.adjust(new_time);
-
+        
+        // Reset flags and initial conditions
         first_loop = true;
         config::global_flags.time_set = 0;
         config::global_flags.adjust_active = 0;
@@ -186,6 +193,12 @@ void ClockFunctionality::SetDate() {
     if (config::global_flags.rtc_error == 1) {
         Serial.println("Fatal RTC error, check connection to RTC module");
         DisplayError();
+        return;
+    }
+
+    if (config::global_flags.adjust_active == 1) {
+        config::time_setting.mode == 1;
+        AdjustTime();
         return;
     }
 
