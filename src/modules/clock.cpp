@@ -103,11 +103,10 @@ void AdjustTime() {
             delay(2);
             display::SetDigit(segment_2, 2, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
             delay(2);
+        } else {
+            display::SetDigit(0, 0, ClockFunctionality::segs_1, ClockFunctionality::segs_2);
+            delay(2);
         }
-        // If mode is 3, flash whole disp off anyway
-        // FUTURE:
-        // Add another display function that displays no digit but displays extras
-        // hint: use the master control line for the grids 
     }
 
     first_loop = false;
