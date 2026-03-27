@@ -72,7 +72,7 @@ Secondly, the footprint used for the 5-pin JST connected was incorrect for the s
 
 In the next redesign, I need to fix the two existing hardware bugs, but I would also like to reduce the size of the PCB with some layout optimisation. 
 
-#### New Design!
+### New Design!
 
 Following on from the initial PCB, I decided to mount the next PCB directly to the display for greater versatility.
 In addition, the new circuit allows 8-stage variable brightness via a comparator-based PWM generator, includes a hardware multiplexer removing the need for software-based multiplexing, and includes both necessary DC-DC voltage converters.
